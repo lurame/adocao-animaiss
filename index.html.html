@@ -1,0 +1,3621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Amor de Quatro Patas | Adoção de Animais</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+
+        /* ==================================================
+           RESET
+        ================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #fffaf2;
+            color: #51332c;
+            line-height: 1.6;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        :root {
+
+            --amarelo: #ffe3a3;
+            --amarelo-claro: #fff4d8;
+            --amarelo-suave: #fffaf0;
+
+            --vermelho: #d85b50;
+            --vermelho-escuro: #b83e36;
+            --vermelho-claro: #f7c9c0;
+
+            --marrom: #51332c;
+            --marrom-claro: #75574f;
+
+            --branco: #ffffff;
+
+            --sombra:
+                0 15px 40px rgba(91, 45, 30, 0.10);
+
+            --sombra-forte:
+                0 20px 55px rgba(91, 45, 30, 0.15);
+
+            --raio: 28px;
+        }
+
+
+        /* ==================================================
+           NAVBAR
+        ================================================== */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 9999;
+            background: rgba(255, 250, 242, 0.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #f1d8c9;
+        }
+
+        .navbar {
+            max-width: 1250px;
+            margin: auto;
+            min-height: 76px;
+            padding: 0 25px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color: var(--vermelho-escuro);
+
+            font-size: 22px;
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: var(--amarelo);
+            border-radius: 50%;
+
+            color: var(--vermelho);
+            font-size: 22px;
+        }
+
+        .nav-links {
+            list-style: none;
+
+            display: flex;
+            align-items: center;
+
+            gap: 5px;
+        }
+
+        .nav-links a {
+            color: var(--marrom);
+
+            font-size: 14px;
+            font-weight: 700;
+
+            padding: 10px 14px;
+
+            border-radius: 25px;
+
+            transition: .3s;
+        }
+
+        .nav-links a:hover {
+            background: var(--amarelo-claro);
+            color: var(--vermelho-escuro);
+        }
+
+        .nav-links .destaque {
+            background: var(--vermelho);
+            color: white;
+        }
+
+        .nav-links .destaque:hover {
+            background: var(--vermelho-escuro);
+            color: white;
+        }
+
+        .nav-links .publicar {
+            background: var(--amarelo);
+            color: var(--vermelho-escuro);
+        }
+
+        .nav-links .publicar:hover {
+            background: #ffd783;
+        }
+
+        .menu-mobile {
+            display: none;
+
+            width: 44px;
+            height: 44px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: var(--amarelo);
+            color: var(--vermelho-escuro);
+
+            font-size: 22px;
+        }
+
+
+        /* ==================================================
+           HERO
+        ================================================== */
+
+        .hero {
+            min-height: 650px;
+
+            display: flex;
+            align-items: center;
+
+            position: relative;
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    120deg,
+                    #ffe5ad,
+                    #fff1d5 52%,
+                    #fbd5cb
+                );
+        }
+
+        .hero-container {
+            width: 100%;
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding: 70px 25px;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 60px;
+
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+
+            padding: 8px 16px;
+
+            border-radius: 30px;
+
+            background: white;
+
+            color: var(--vermelho-escuro);
+
+            font-size: 13px;
+            font-weight: 800;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 8px 20px rgba(90,40,20,.08);
+        }
+
+        .hero h1 {
+            font-size: clamp(44px, 6vw, 72px);
+
+            line-height: 1.03;
+
+            color: #9f342f;
+
+            margin-bottom: 25px;
+        }
+
+        .hero h1 span {
+            color: var(--vermelho);
+        }
+
+        .hero-text {
+            max-width: 620px;
+
+            font-size: 18px;
+
+            color: #65473f;
+
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn {
+            border: none;
+
+            padding: 13px 21px;
+
+            border-radius: 30px;
+
+            font-weight: 800;
+
+            transition: .3s;
+        }
+
+        .btn-primary {
+            background: var(--vermelho);
+            color: white;
+
+            box-shadow:
+                0 8px 22px rgba(216,91,80,.22);
+        }
+
+        .btn-primary:hover {
+            background: var(--vermelho-escuro);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: white;
+
+            color: var(--vermelho-escuro);
+
+            border: 2px solid #efc5bb;
+        }
+
+        .btn-outline:hover {
+            background: var(--amarelo-claro);
+            transform: translateY(-2px);
+        }
+
+        .hero-image-card {
+            background: white;
+
+            padding: 12px;
+
+            border-radius: 35px;
+
+            box-shadow: var(--sombra-forte);
+
+            transform: rotate(2deg);
+
+            transition: .4s;
+        }
+
+        .hero-image-card:hover {
+            transform: rotate(0deg) translateY(-5px);
+        }
+
+        .hero-image-card img {
+            width: 100%;
+            height: 420px;
+
+            object-fit: cover;
+
+            border-radius: 27px;
+        }
+
+
+        /* ==================================================
+           SEÇÕES
+        ================================================== */
+
+        section {
+            padding: 85px 25px;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: auto;
+        }
+
+        .section-heading {
+            max-width: 720px;
+
+            margin: 0 auto 48px;
+
+            text-align: center;
+        }
+
+        .section-heading span {
+            color: var(--vermelho);
+
+            text-transform: uppercase;
+
+            font-size: 12px;
+
+            font-weight: 900;
+
+            letter-spacing: 2px;
+        }
+
+        .section-heading h2 {
+            margin-top: 8px;
+
+            font-size: clamp(32px, 4vw, 45px);
+
+            color: var(--vermelho-escuro);
+        }
+
+        .section-heading p {
+            margin-top: 12px;
+
+            color: var(--marrom-claro);
+        }
+
+
+        /* ==================================================
+           SOBRE
+        ================================================== */
+
+        #sobre {
+            background: #fffaf2;
+        }
+
+        .sobre-texto {
+            max-width: 950px;
+
+            margin: auto;
+
+            padding: 42px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff0d0,
+                    #fff8e9
+                );
+
+            border-radius: 32px;
+
+            border: 1px solid #f0d7ba;
+
+            box-shadow: var(--sombra);
+
+            text-align: center;
+        }
+
+        .sobre-texto p {
+            color: #654840;
+
+            font-size: 17px;
+
+            margin-bottom: 18px;
+        }
+
+        .sobre-texto p:last-child {
+            margin-bottom: 0;
+        }
+
+
+        /* ==================================================
+           COMO FUNCIONA
+        ================================================== */
+
+        #como-funciona {
+            background: #fff0e8;
+        }
+
+        .passos {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 25px;
+        }
+
+        .passo {
+            background: white;
+
+            padding: 35px 28px;
+
+            border-radius: 25px;
+
+            text-align: center;
+
+            box-shadow: var(--sombra);
+
+            transition: .3s;
+        }
+
+        .passo:hover {
+            transform: translateY(-7px);
+        }
+
+        .passo-numero {
+            width: 55px;
+            height: 55px;
+
+            margin: 0 auto 18px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: var(--amarelo);
+
+            color: var(--vermelho-escuro);
+
+            border-radius: 50%;
+
+            font-size: 20px;
+
+            font-weight: 900;
+        }
+
+        .passo h3 {
+            color: var(--vermelho-escuro);
+
+            margin-bottom: 10px;
+        }
+
+        .passo p {
+            color: var(--marrom-claro);
+
+            font-size: 14px;
+        }
+
+
+        /* ==================================================
+           ANIMAIS
+        ================================================== */
+
+        #animais {
+            background: #fffaf2;
+        }
+
+        .controles {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+
+            gap: 15px;
+
+            margin-bottom: 35px;
+        }
+
+        .busca {
+            width: 300px;
+        }
+
+        .busca input {
+            width: 100%;
+
+            padding: 14px 18px;
+
+            border: 1px solid #ecd2c6;
+
+            border-radius: 30px;
+
+            outline: none;
+
+            background: white;
+        }
+
+        .busca input:focus {
+            border-color: var(--vermelho);
+        }
+
+        .filtros {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+        }
+
+        .filtro {
+            border: 1px solid #edc4b8;
+
+            background: white;
+
+            color: var(--vermelho-escuro);
+
+            padding: 10px 17px;
+
+            border-radius: 25px;
+
+            font-weight: 700;
+        }
+
+        .filtro.ativo,
+        .filtro:hover {
+            background: var(--vermelho);
+
+            color: white;
+        }
+
+        .animais-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 30px;
+        }
+
+        .animal-card {
+            display: grid;
+
+            grid-template-columns: 42% 58%;
+
+            background: white;
+
+            border-radius: 28px;
+
+            overflow: hidden;
+
+            box-shadow: var(--sombra);
+
+            transition: .35s;
+        }
+
+        .animal-card:hover {
+            transform: translateY(-6px);
+
+            box-shadow: var(--sombra-forte);
+        }
+
+        .animal-foto {
+            min-height: 350px;
+        }
+
+        .animal-foto img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+        }
+
+        .animal-conteudo {
+            padding: 25px;
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+        .animal-tipo {
+            align-self: flex-start;
+
+            padding: 5px 11px;
+
+            border-radius: 20px;
+
+            background: var(--amarelo-claro);
+
+            color: var(--vermelho-escuro);
+
+            font-size: 11px;
+
+            font-weight: 900;
+
+            margin-bottom: 8px;
+        }
+
+        .animal-conteudo h3 {
+            color: var(--vermelho-escuro);
+
+            font-size: 28px;
+        }
+
+        .animal-idade {
+            color: var(--vermelho);
+
+            font-weight: 800;
+
+            margin-bottom: 13px;
+        }
+
+        .animal-localizacao {
+            color: var(--marrom-claro);
+            font-size: 13px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .animal-conteudo p {
+            color: var(--marrom-claro);
+
+            font-size: 14px;
+
+            margin-bottom: 15px;
+        }
+
+        .caracteristicas {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 6px;
+
+            margin-bottom: 20px;
+        }
+
+        .caracteristica {
+            background: #fff5e7;
+
+            color: #79584f;
+
+            padding: 6px 9px;
+
+            border-radius: 10px;
+
+            font-size: 11px;
+        }
+
+        .animal-botoes {
+            margin-top: auto;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 8px;
+        }
+
+        .animal-botao {
+            border: none;
+
+            padding: 12px 8px;
+
+            border-radius: 13px;
+
+            background: var(--vermelho);
+
+            color: white;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            transition: .3s;
+        }
+
+        .animal-botao:hover {
+            background: var(--vermelho-escuro);
+        }
+
+        .localizacao-botao {
+            border: 2px solid var(--vermelho);
+
+            padding: 10px 7px;
+
+            border-radius: 13px;
+
+            background: white;
+
+            color: var(--vermelho-escuro);
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            transition: .3s;
+        }
+
+        .localizacao-botao:hover {
+            background: var(--amarelo-claro);
+
+            transform: translateY(-2px);
+        }
+
+        .animal-sem-resultado {
+            display: none;
+
+            text-align: center;
+
+            padding: 45px;
+
+            color: var(--marrom-claro);
+        }
+
+
+        /* ==================================================
+           MAPA
+        ================================================== */
+
+        #mapa {
+            background: #fff0e7;
+        }
+
+        .mapa-container {
+            overflow: hidden;
+
+            border: 5px solid white;
+
+            border-radius: 32px;
+
+            box-shadow: var(--sombra-forte);
+        }
+
+        #map {
+            width: 100%;
+            height: 580px;
+        }
+
+        .mapa-info {
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: var(--marrom-claro);
+
+            font-size: 14px;
+        }
+
+        .marcador {
+            width: 45px;
+            height: 45px;
+
+            background: var(--vermelho);
+
+            border: 4px solid white;
+
+            border-radius: 50% 50% 50% 0;
+
+            transform: rotate(-45deg);
+
+            box-shadow:
+                0 5px 14px rgba(70,30,20,.25);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+        .marcador span {
+            transform: rotate(45deg);
+
+            color: white;
+
+            font-size: 18px;
+        }
+
+        .popup {
+            text-align: center;
+        }
+
+        .popup img {
+            width: 150px;
+            height: 95px;
+
+            object-fit: cover;
+
+            border-radius: 10px;
+
+            margin: auto;
+        }
+
+        .popup h3 {
+            color: var(--vermelho-escuro);
+
+            margin-top: 7px;
+        }
+
+
+        /* ==================================================
+           QUIZ
+        ================================================== */
+
+        #quiz {
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffe8b7,
+                    #fff0e9
+                );
+        }
+
+        .quiz-box {
+            max-width: 850px;
+
+            margin: auto;
+
+            background: white;
+
+            border-radius: 32px;
+
+            padding: 42px;
+
+            box-shadow: var(--sombra-forte);
+        }
+
+        .barra {
+            height: 8px;
+
+            background: #f3ded5;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            margin-bottom: 35px;
+        }
+
+        .barra-progresso {
+            height: 100%;
+
+            width: 25%;
+
+            background: var(--vermelho);
+
+            transition: .4s;
+        }
+
+        .pergunta {
+            display: none;
+        }
+
+        .pergunta.ativa {
+            display: block;
+        }
+
+        .pergunta h3 {
+            color: var(--vermelho-escuro);
+
+            font-size: 25px;
+
+            margin-bottom: 23px;
+        }
+
+        .opcoes {
+            display: grid;
+
+            gap: 11px;
+        }
+
+        .opcao {
+            padding: 15px 17px;
+
+            border: 2px solid #f0dcd4;
+
+            border-radius: 15px;
+
+            cursor: pointer;
+
+            color: #62483f;
+
+            transition: .25s;
+        }
+
+        .opcao:hover {
+            border-color: var(--vermelho);
+
+            background: #fff7ee;
+        }
+
+        .opcao.selecionada {
+            border-color: var(--vermelho);
+
+            background: #ffe7df;
+
+            color: var(--vermelho-escuro);
+
+            font-weight: 700;
+        }
+
+        .quiz-controles {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-top: 30px;
+        }
+
+        .resultado {
+            display: none;
+
+            text-align: center;
+        }
+
+        .resultado img {
+            width: 210px;
+            height: 210px;
+
+            object-fit: cover;
+
+            border-radius: 50%;
+
+            border: 8px solid var(--amarelo);
+
+            margin: 0 auto 20px;
+        }
+
+        .resultado h3 {
+            color: var(--vermelho-escuro);
+
+            font-size: 31px;
+        }
+
+        .resultado p {
+            max-width: 620px;
+
+            margin: 10px auto 25px;
+
+            color: var(--marrom-claro);
+        }
+
+
+        /* ==================================================
+           PUBLICAR ANÚNCIO
+        ================================================== */
+
+        #publicar {
+            background: #fffaf2;
+        }
+
+        .publicar-box {
+            max-width: 950px;
+
+            margin: auto;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 30px;
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 32px;
+
+            box-shadow: var(--sombra-forte);
+        }
+
+        .foto-publicação {
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff0d0,
+                    #fff8ed
+                );
+
+            border-radius: 24px;
+
+            padding: 25px;
+
+            text-align: center;
+        }
+
+        .preview-foto {
+            width: 100%;
+
+            height: 300px;
+
+            object-fit: cover;
+
+            border-radius: 20px;
+
+            background: #f8e7d8;
+
+            display: none;
+
+            margin-bottom: 18px;
+        }
+
+        .foto-placeholder {
+            height: 300px;
+
+            border-radius: 20px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #fff3dc;
+
+            border: 2px dashed #e7bda9;
+
+            color: var(--marrom-claro);
+
+            margin-bottom: 18px;
+
+            padding: 20px;
+        }
+
+        .foto-placeholder strong {
+            color: var(--vermelho-escuro);
+
+            font-size: 18px;
+
+            margin-bottom: 7px;
+        }
+
+        .foto-botoes {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 10px;
+        }
+
+        .foto-botao {
+            border: none;
+
+            padding: 13px;
+
+            border-radius: 13px;
+
+            background: var(--vermelho);
+
+            color: white;
+
+            font-weight: 800;
+        }
+
+        .foto-botao:hover {
+            background: var(--vermelho-escuro);
+        }
+
+        .form-publicação {
+            padding: 5px;
+        }
+
+        .form-publicação h3 {
+            color: var(--vermelho-escuro);
+
+            font-size: 25px;
+
+            margin-bottom: 8px;
+        }
+
+        .form-publicação > p {
+            color: var(--marrom-claro);
+
+            font-size: 14px;
+
+            margin-bottom: 22px;
+        }
+
+        .campo {
+            margin-bottom: 15px;
+        }
+
+        .campo label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            font-size: 14px;
+
+            font-weight: 800;
+
+            color: var(--marrom);
+        }
+
+        .campo input,
+        .campo textarea,
+        .campo select {
+            width: 100%;
+
+            padding: 13px;
+
+            border: 1px solid #e6cfc6;
+
+            border-radius: 12px;
+
+            outline: none;
+
+            background: #fffdf9;
+        }
+
+        .campo textarea {
+            min-height: 90px;
+
+            resize: vertical;
+        }
+
+        .campo input:focus,
+        .campo textarea:focus,
+        .campo select:focus {
+            border-color: var(--vermelho);
+        }
+
+
+        /* ==================================================
+           FAQ
+        ================================================== */
+
+        #faq {
+            background: #fffaf2;
+        }
+
+        .faq {
+            max-width: 900px;
+
+            margin: auto;
+
+            display: grid;
+
+            gap: 13px;
+        }
+
+        .faq-item {
+            background: white;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 5px 18px rgba(90,40,20,.06);
+
+            overflow: hidden;
+        }
+
+        .faq-pergunta {
+            width: 100%;
+
+            border: none;
+
+            background: white;
+
+            padding: 21px;
+
+            text-align: left;
+
+            color: var(--vermelho-escuro);
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .faq-pergunta span {
+            font-size: 23px;
+        }
+
+        .faq-resposta {
+            display: none;
+
+            padding: 0 21px 22px;
+
+            color: var(--marrom-claro);
+
+            font-size: 14px;
+        }
+
+        .faq-item.aberto .faq-resposta {
+            display: block;
+        }
+
+        .faq-item.aberto .faq-pergunta {
+            background: var(--amarelo-claro);
+        }
+
+
+        /* ==================================================
+           MODAIS
+        ================================================== */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 10000;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            background: rgba(50,25,20,.65);
+        }
+
+        .modal.aberto {
+            display: flex;
+        }
+
+        .modal-caixa {
+            width: 100%;
+
+            max-width: 560px;
+
+            background: white;
+
+            border-radius: 30px;
+
+            padding: 35px;
+
+            position: relative;
+
+            max-height: 90vh;
+
+            overflow-y: auto;
+        }
+
+        .fechar-modal {
+            position: absolute;
+
+            top: 13px;
+
+            right: 18px;
+
+            width: 38px;
+            height: 38px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: var(--amarelo-claro);
+
+            color: var(--vermelho-escuro);
+
+            font-size: 25px;
+        }
+
+        .modal-caixa h2 {
+            color: var(--vermelho-escuro);
+
+            margin-bottom: 7px;
+        }
+
+        .modal-caixa > p {
+            color: var(--marrom-claro);
+
+            font-size: 14px;
+
+            margin-bottom: 22px;
+        }
+
+        .mensagem-sucesso {
+            display: none;
+
+            text-align: center;
+
+            padding: 20px 0;
+        }
+
+        .mensagem-sucesso .icone {
+            width: 65px;
+            height: 65px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #dff3df;
+
+            color: #398343;
+
+            font-size: 30px;
+        }
+
+
+        /* ==================================================
+           FOOTER
+        ================================================== */
+
+        footer {
+            background: #9f342f;
+
+            color: white;
+
+            padding: 60px 25px 25px;
+        }
+
+        .footer-grid {
+            max-width: 1250px;
+
+            margin: auto;
+
+            display: grid;
+
+            grid-template-columns:
+                2fr 1fr 1fr;
+
+            gap: 50px;
+        }
+
+        footer h3 {
+            margin-bottom: 13px;
+        }
+
+        footer p,
+        footer a {
+            color: #ffe6dd;
+
+            font-size: 14px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+
+        .copyright {
+            max-width: 1250px;
+
+            margin: 40px auto 0;
+
+            padding-top: 20px;
+
+            border-top:
+                1px solid rgba(255,255,255,.2);
+
+            text-align: center;
+
+            color: #ffe6dd;
+
+            font-size: 13px;
+        }
+
+
+        /* ==================================================
+           TOPO
+        ================================================== */
+
+        .voltar-topo {
+            position: fixed;
+
+            right: 22px;
+
+            bottom: 22px;
+
+            width: 48px;
+            height: 48px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: var(--vermelho);
+
+            color: white;
+
+            font-size: 20px;
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            transition: .3s;
+
+            z-index: 5000;
+        }
+
+        .voltar-topo.visivel {
+            opacity: 1;
+
+            visibility: visible;
+        }
+
+
+        /* ==================================================
+           RESPONSIVIDADE
+        ================================================== */
+
+        @media(max-width:1050px) {
+
+            .hero-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content {
+                text-align: center;
+            }
+
+            .hero-text {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-image-card {
+                max-width: 600px;
+
+                margin: auto;
+            }
+
+            .animais-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media(max-width:850px) {
+
+            .publicar-box {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media(max-width:800px) {
+
+            .menu-mobile {
+                display: block;
+            }
+
+            .nav-links {
+
+                display: none;
+
+                position: absolute;
+
+                top: 70px;
+
+                left: 15px;
+
+                right: 15px;
+
+                padding: 15px;
+
+                background: white;
+
+                border-radius: 20px;
+
+                box-shadow: var(--sombra);
+
+                flex-direction: column;
+            }
+
+            .nav-links.aberto {
+                display: flex;
+            }
+
+            .nav-links a {
+                display: block;
+
+                width: 100%;
+
+                text-align: center;
+            }
+
+            .passos {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+        }
+
+
+        @media(max-width:600px) {
+
+            section {
+                padding: 70px 17px;
+            }
+
+            .navbar {
+                padding: 0 17px;
+            }
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .logo-icon {
+                width: 38px;
+                height: 38px;
+            }
+
+            .hero-container {
+                padding: 60px 17px;
+            }
+
+            .hero-image-card img {
+                height: 330px;
+            }
+
+            .sobre-texto {
+                padding: 28px 22px;
+            }
+
+            .sobre-texto p {
+                font-size: 15px;
+            }
+
+            .controles {
+                align-items: stretch;
+            }
+
+            .busca {
+                width: 100%;
+            }
+
+            .filtros {
+                width: 100%;
+            }
+
+            .filtro {
+                flex: 1;
+            }
+
+            .animal-card {
+                grid-template-columns: 1fr;
+            }
+
+            .animal-foto {
+                height: 280px;
+                min-height: 280px;
+            }
+
+            .animal-botoes {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            #map {
+                height: 450px;
+            }
+
+            .quiz-box {
+                padding: 25px 20px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-caixa {
+                padding: 28px 20px;
+            }
+
+            .foto-botoes {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==================================================
+     NAVBAR
+================================================== -->
+
+<header>
+
+    <nav class="navbar">
+
+        <a href="#sobre" class="logo">
+
+            <span class="logo-icon">
+                ♥
+            </span>
+
+            Amor de Quatro Patas
+
+        </a>
+
+
+        <button
+            class="menu-mobile"
+            id="menuMobile">
+
+            ☰
+
+        </button>
+
+
+        <ul class="nav-links" id="navLinks">
+
+            <li>
+                <a href="#sobre">
+                    Sobre nós
+                </a>
+            </li>
+
+            <li>
+                <a href="#animais">
+                    Quero adotar
+                </a>
+            </li>
+
+            <li>
+                <a href="#mapa">
+                    Localização
+                </a>
+            </li>
+
+            <li>
+                <a
+                    href="#publicar"
+                    class="publicar">
+
+                    Publicar anúncio
+
+                </a>
+            </li>
+
+            <li>
+                <a
+                    href="#quiz"
+                    class="destaque">
+
+                    Qual combina comigo?
+
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+</header>
+
+
+<!-- ==================================================
+     HERO
+================================================== -->
+
+<section class="hero">
+
+    <div class="hero-container">
+
+        <div>
+
+            <div class="hero-badge">
+                ♥ Adoção responsável
+            </div>
+
+            <h1>
+                Encontre um novo
+                <span>
+                    melhor amigo.
+                </span>
+            </h1>
+
+            <p class="hero-text">
+
+                Existem animais esperando por uma família
+                que possa oferecer carinho, cuidado e uma
+                segunda chance. Talvez o seu novo companheiro
+                esteja aqui.
+
+            </p>
+
+            <div class="hero-buttons">
+
+                <a
+                    href="#animais"
+                    class="btn btn-primary">
+
+                    Quero adotar
+
+                </a>
+
+                <a
+                    href="#quiz"
+                    class="btn btn-outline">
+
+                    Fazer o quiz
+
+                </a>
+
+                <a
+                    href="#publicar"
+                    class="btn btn-outline">
+
+                    Publicar um animal
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div>
+
+            <div class="hero-image-card">
+
+                <img
+                    src="https://img.magnific.com/fotos-premium/cachorrinho-e-gatinho-adoraveis-sentados-juntos_986396-20788.jpg?semt=ais_hybrid&w=740&q=80"
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SOBRE NÓS
+================================================== -->
+
+<section id="sobre">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span>
+                Sobre nós
+            </span>
+
+            <h2>
+                Amor de Quatro Patas
+            </h2>
+
+        </div>
+
+
+        <div class="sobre-texto">
+
+            <p>
+
+                O Amor de Quatro Patas é um site criado
+                para aproximar animais que precisam de uma
+                família de pessoas que desejam oferecer
+                carinho, segurança e uma vida melhor.
+
+            </p>
+
+            <p>
+
+                Aqui você pode conhecer cães e gatos,
+                descobrir suas características, verificar
+                sua localização aproximada e demonstrar
+                interesse em uma adoção.
+
+            </p>
+
+            <p>
+
+                Também permitimos que pessoas publiquem
+                anúncios de animais que precisam encontrar
+                uma nova família.
+
+            </p>
+
+            <p>
+
+                Nosso objetivo é tornar o encontro entre
+                animais e famílias mais simples, seguro
+                e responsável.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     COMO FUNCIONA
+================================================== -->
+
+<section id="como-funciona">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span>
+                Adoção
+            </span>
+
+            <h2>
+                Como funciona?
+            </h2>
+
+            <p>
+                Conheça o processo de forma simples.
+            </p>
+
+        </div>
+
+
+        <div class="passos">
+
+            <div class="passo">
+
+                <div class="passo-numero">
+                    1
+                </div>
+
+                <h3>
+                    Conheça
+                </h3>
+
+                <p>
+
+                    Veja cães e gatos disponíveis
+                    e conheça suas características.
+
+                </p>
+
+            </div>
+
+
+            <div class="passo">
+
+                <div class="passo-numero">
+                    2
+                </div>
+
+                <h3>
+                    Demonstre interesse
+                </h3>
+
+                <p>
+
+                    Clique em "Tenho interesse" e
+                    preencha o formulário.
+
+                </p>
+
+            </div>
+
+
+            <div class="passo">
+
+                <div class="passo-numero">
+                    3
+                </div>
+
+                <h3>
+                    Conheça melhor
+                </h3>
+
+                <p>
+
+                    Converse com os responsáveis
+                    e combine os próximos passos.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     ANIMAIS
+================================================== -->
+
+<section id="animais">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span>
+                Para adoção
+            </span>
+
+            <h2>
+                Conheça nossos animais
+            </h2>
+
+            <p>
+                Quem sabe seu novo melhor amigo está aqui?
+            </p>
+
+        </div>
+
+
+        <div class="controles">
+
+            <div class="busca">
+
+                <input
+                    id="campoBusca"
+                    type="text"
+                    placeholder="Pesquisar pelo nome..."
+                    onkeyup="buscarAnimal()">
+
+            </div>
+
+
+            <div class="filtros">
+
+                <button
+                    class="filtro ativo"
+                    onclick="filtrar('todos', this)">
+
+                    Todos
+
+                </button>
+
+                <button
+                    class="filtro"
+                    onclick="filtrar('cao', this)">
+
+                    Cachorros
+
+                </button>
+
+                <button
+                    class="filtro"
+                    onclick="filtrar('gato', this)">
+
+                    Gatos
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="animais-grid"
+            id="animaisGrid">
+
+
+            <!-- LUNA -->
+
+            <article
+                class="animal-card"
+                data-tipo="cao"
+                data-nome="luna">
+
+                <div class="animal-foto">
+
+                    <img
+                        src="https://www.patasdacasa.com.br/sites/default/files/styles/article_detail_1200/public/noticias/2023/01/feminino-de-cachorro-o-certo-e-cachorra-ou-cadela_1.jpg.webp?itok=Khmybjpx"
+                        alt="Luna">
+
+                </div>
+
+                <div class="animal-conteudo">
+
+                    <span class="animal-tipo">
+                        Cachorra
+                    </span>
+
+                    <h3>
+                        Luna
+                    </h3>
+
+                    <div class="animal-idade">2 anos</div>
+                    <div class="animal-localizacao">Localização: Otacílio Costa - SC</div>
+                    <p class="animal-personalidade">Luna é carinhosa, brincalhona e sociável. Adora estar perto das pessoas e participar das atividades da família.</p>
+
+                    <div class="caracteristicas">
+
+                        <span class="caracteristica">
+                            Dócil
+                        </span>
+
+                        <span class="caracteristica">
+                            Brincalhona
+                        </span>
+
+                        <span class="caracteristica">
+                            Sociável
+                        </span>
+
+                    </div>
+
+                    <div class="animal-botoes">
+
+                        <button
+                            class="animal-botao"
+                            onclick="abrirModal('Luna')">
+
+                            Tenho interesse
+
+                        </button>
+
+                        <button
+                            class="localizacao-botao"
+                            onclick="verLocalizacao('Luna')">
+
+                            Ver localização
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- Tom -->
+
+            <article
+                class="animal-card"
+                data-tipo="cao"
+                data-nome="tom">
+
+                <div class="animal-foto">
+
+                    <img
+                        src="https://cdn.jornaldaparaiba.com.br/wp-content/uploads/2024/01/racas-de-cachorro-labrador-retriever.jpg?xid=650493"
+                        alt="Tom">
+
+                </div>
+
+                <div class="animal-conteudo">
+
+                    <span class="animal-tipo">
+                        Cachorro
+                    </span>
+
+                    <h3>
+                        Tom
+                    </h3>
+
+                    <div class="animal-idade">4 anos</div>
+                    <div class="animal-localizacao">Localização: Otacílio Costa - SC</div>
+                    <p class="animal-personalidade">Tom é calmo, carinhoso e companheiro. Gosta de receber atenção e aprecia momentos tranquilos ao lado das pessoas.</p>
+
+                    <div class="caracteristicas">
+
+                        <span class="caracteristica">
+                            Calmo
+                        </span>
+
+                        <span class="caracteristica">
+                            Carinhoso
+                        </span>
+
+                        <span class="caracteristica">
+                            Companheiro
+                        </span>
+
+                    </div>
+
+                    <div class="animal-botoes">
+
+                        <button
+                            class="animal-botao"
+                            onclick="abrirModal('Thor')">
+
+                            Tenho interesse
+
+                        </button>
+
+                        <button
+                            class="localizacao-botao"
+                            onclick="verLocalizacao('Thor')">
+
+                            Ver localização
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- MEL -->
+
+            <article
+                class="animal-card"
+                data-tipo="gato"
+                data-nome="mel">
+
+                <div class="animal-foto">
+
+                    <img
+                        src="https://awebic.com.br/wp-content/uploads/2016/05/awebic-gata-mais-fotogenica-3.jpg"
+                        alt="Mel">
+
+                </div>
+
+                <div class="animal-conteudo">
+
+                    <span class="animal-tipo">
+                        Gata
+                    </span>
+
+                    <h3>
+                        Mel
+                    </h3>
+
+                    <div class="animal-idade">1 ano</div>
+                    <div class="animal-localizacao">Localização: Otacílio Costa - SC</div>
+                    <p class="animal-personalidade">Mel é curiosa, carinhosa e tranquila. Gosta de explorar o ambiente no seu ritmo e depois descansar perto de quem confia.</p>
+
+                    <div class="caracteristicas">
+
+                        <span class="caracteristica">
+                            Curiosa
+                        </span>
+
+                        <span class="caracteristica">
+                            Carinhosa
+                        </span>
+
+                        <span class="caracteristica">
+                            Tranquila
+                        </span>
+
+                    </div>
+
+                    <div class="animal-botoes">
+
+                        <button
+                            class="animal-botao"
+                            onclick="abrirModal('Mel')">
+
+                            Tenho interesse
+
+                        </button>
+
+                        <button
+                            class="localizacao-botao"
+                            onclick="verLocalizacao('Mel')">
+
+                            Ver localização
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- SIMBA -->
+
+            <article
+                class="animal-card"
+                data-tipo="gato"
+                data-nome="simba">
+
+                <div class="animal-foto">
+
+                    <img
+                        src="https://static.wixstatic.com/media/1cbe41_1db56ff59200428f99b87077f3b9f8dc~mv2_d_2304_1728_s_2.jpg/v1/fill/w_1000,h_750,al_c,q_85,usm_0.66_1.00_0.01/1cbe41_1db56ff59200428f99b87077f3b9f8dc~mv2_d_2304_1728_s_2.jpg"
+                        alt="Simba">
+
+                </div>
+
+                <div class="animal-conteudo">
+
+                    <span class="animal-tipo">
+                        Gato
+                    </span>
+
+                    <h3>
+                        Simba
+                    </h3>
+
+                    <div class="animal-idade">3 anos</div>
+                    <div class="animal-localizacao">Localização: Otacílio Costa - SC</div>
+                    <p class="animal-personalidade">Simba é independente, calmo e carinhoso. Tem seu próprio jeito de demonstrar afeto e gosta de ter momentos de tranquilidade.</p>
+
+                    <div class="caracteristicas">
+
+                        <span class="caracteristica">
+                            Independente
+                        </span>
+
+                        <span class="caracteristica">
+                            Calmo
+                        </span>
+
+                        <span class="caracteristica">
+                            Carinhoso
+                        </span>
+
+                    </div>
+
+                    <div class="animal-botoes">
+
+                        <button
+                            class="animal-botao"
+                            onclick="abrirModal('Simba')">
+
+                            Tenho interesse
+
+                        </button>
+
+                        <button
+                            class="localizacao-botao"
+                            onclick="verLocalizacao('Simba')">
+
+                            Ver localização
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </div>
+
+
+        <div
+            class="animal-sem-resultado"
+            id="semResultado">
+
+            Nenhum animal encontrado.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     MAPA
+================================================== -->
+
+<section id="mapa">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span>
+                Localização
+            </span>
+
+            <h2>
+                Onde estão os animais?
+            </h2>
+
+            <p>
+
+                Os pontos são aproximados para preservar
+                a segurança dos animais e responsáveis.
+
+            </p>
+
+        </div>
+
+
+        <div class="mapa-container">
+
+            <div id="map"></div>
+
+        </div>
+
+
+        <p class="mapa-info">
+
+            A localização exibida é aproximada para preservar a segurança dos animais e responsáveis.
+
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     QUIZ
+================================================== -->
+
+<section id="quiz">
+    <div class="container">
+        <div class="section-heading">
+            <span>Quiz</span>
+            <h2>Qual animal combina comigo?</h2>
+            <p>Responda 5 perguntas sobre sua rotina e preferências e descubra qual animal pode combinar melhor com sua personalidade.</p>
+        </div>
+
+        <div class="quiz-box">
+            <div class="quiz-topo"><span id="quizContador">Pergunta 1 de 5</span></div>
+            <div class="barra"><div class="barra-progresso" id="barraProgresso"></div></div>
+
+            <div class="pergunta ativa" data-pergunta="1">
+                <h3>Você procura um cachorro ou gato?</h3>
+                <div class="opcoes"><div class="opcao" data-resposta="cao">Cachorro</div><div class="opcao" data-resposta="gato">Gato</div><div class="opcao" data-resposta="qualquer">Estou aberto aos dois</div></div>
+            </div>
+            <div class="pergunta" data-pergunta="2">
+                <h3>Como é a sua rotina?</h3>
+                <div class="opcoes"><div class="opcao" data-resposta="ativo">Gosto de passear, brincar e me movimentar.</div><div class="opcao" data-resposta="equilibrado">Gosto de uma rotina equilibrada.</div><div class="opcao" data-resposta="calmo">Prefiro uma rotina tranquila.</div></div>
+            </div>
+            <div class="pergunta" data-pergunta="3">
+                <h3>Que tipo de companhia você procura?</h3>
+                <div class="opcoes"><div class="opcao" data-resposta="sociavel">Um animal muito sociável e brincalhão.</div><div class="opcao" data-resposta="carinhoso">Um animal carinhoso e companheiro.</div><div class="opcao" data-resposta="independente">Um animal mais independente e tranquilo.</div></div>
+            </div>
+            <div class="pergunta" data-pergunta="4">
+                <h3>Quanto tempo você tem para o animal?</h3>
+                <div class="opcoes"><div class="opcao" data-resposta="muito">Tenho bastante tempo todos os dias.</div><div class="opcao" data-resposta="medio">Tenho algumas horas por dia.</div><div class="opcao" data-resposta="pouco">Minha rotina é mais corrida.</div></div>
+            </div>
+            <div class="pergunta" data-pergunta="5">
+                <h3>Qual personalidade combina mais com você?</h3>
+                <div class="opcoes"><div class="opcao" data-resposta="brincalhao">Brincalhão e cheio de energia.</div><div class="opcao" data-resposta="carinhoso">Carinhoso e muito companheiro.</div><div class="opcao" data-resposta="curioso">Curioso e explorador.</div><div class="opcao" data-resposta="independente">Independente e tranquilo.</div></div>
+            </div>
+
+            <div class="quiz-controles" id="quizControles"><button class="btn btn-outline" id="btnVoltar" onclick="voltarPergunta()">Voltar</button><button class="btn btn-primary" id="btnProximo" onclick="proximaPergunta()">Próxima</button></div>
+            <div class="resultado" id="resultado"><img id="resultadoImagem" src="" alt="Resultado do quiz"><h3 id="resultadoTitulo"></h3><p id="resultadoTexto"></p><button class="btn btn-primary" id="resultadoBotao">Conhecer animal</button></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ==================================================
+     PUBLICAR ANÚNCIO
+================================================== -->
+
+<section id="publicar">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span>
+                Publique
+            </span>
+
+            <h2>
+                Seu animal precisa de uma família?
+            </h2>
+
+            <p>
+
+                Publique um anúncio gratuitamente,
+                adicione uma foto, características e a localização aproximada
+                do animal para facilitar a adoção.
+
+            </p>
+
+        </div>
+
+
+        <div class="publicar-box">
+
+
+            <div class="foto-publicação">
+
+                <div
+                    class="foto-placeholder"
+                    id="fotoPlaceholder">
+
+                    <strong>
+                        Adicione uma foto
+                    </strong>
+
+                    <span>
+                        Você pode tirar uma foto
+                        ou escolher uma imagem da galeria.
+                    </span>
+
+                </div>
+
+
+                <img
+                    id="previewFoto"
+                    class="preview-foto"
+                    alt="Pré-visualização da foto">
+
+
+                <div class="foto-botoes">
+
+                    <button
+                        type="button"
+                        class="foto-botao"
+                        onclick="abrirCamera()">
+
+                        Tirar foto
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="foto-botao"
+                        onclick="abrirGaleria()">
+
+                        Escolher da galeria
+
+                    </button>
+
+                </div>
+
+
+                <input
+                    type="file"
+                    id="cameraInput"
+                    accept="image/*"
+                    capture="environment"
+                    style="display:none"
+                    onchange="mostrarFoto(event)">
+
+
+                <input
+                    type="file"
+                    id="galeriaInput"
+                    accept="image/*"
+                    style="display:none"
+                    onchange="mostrarFoto(event)">
+
+            </div>
+
+
+            <div class="form-publicação">
+
+                <h3>
+                    Dados do animal
+                </h3>
+
+                <p>
+                    Preencha as informações para criar
+                    o anúncio.
+                </p>
+
+
+                <form
+                    id="formPublicação"
+                    onsubmit="publicarAnimal(event)">
+
+
+                    <div class="campo">
+
+                        <label>
+                            Nome do animal
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nomePublicação"
+                            required
+                            placeholder="Ex.: Bob">
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label>
+                            Tipo
+                        </label>
+
+                        <select
+                            id="tipoPublicação"
+                            required>
+
+                            <option value="">
+                                Selecione
+                            </option>
+
+                            <option value="cao">
+                                Cachorro
+                            </option>
+
+                            <option value="gato">
+                                Gato
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label>
+                            Idade
+                        </label>
+
+                        <input
+                            type="text"
+                            id="idadePublicação"
+                            required
+                            placeholder="Ex.: 2 anos">
+
+                    </div>
+
+
+                    <div class="campo">
+                        <label>Características do animal</label>
+                        <textarea id="caracteristicasPublicação" required placeholder="Ex.: dócil, brincalhão, carinhoso, sociável, tranquilo"></textarea>
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label>
+                            Cidade e bairro
+                        </label>
+
+                        <input
+                            type="text"
+                            id="localPublicação"
+                            required
+                            placeholder="Ex.: Otacílio Costa">
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="width:100%">
+
+                        Publicar anúncio
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     FAQ
+================================================== -->
+
+<section id="faq">
+    <div class="container">
+        <div class="section-heading"><span>Informações</span><h2>Perguntas frequentes</h2><p>Confira respostas mais completas para entender o processo de adoção e publicação de animais.</p></div>
+        <div class="faq">
+            <div class="faq-item"><button class="faq-pergunta" onclick="abrirFaq(this)">Como faço para adotar?<span>+</span></button><div class="faq-resposta">Primeiro, conheca os animais disponiveis e leia com atenção as informações sobre idade, características e localização. Quando encontrar um animal que combine com sua rotina, clique em "Tenho interesse" e preencha o formulario solicitado. Depois disso, o responsável podera entrar em contato para conversar sobre sua rotina, esclarecer dúvidas e combinar uma forma segura de conhecer o animal. O objetivo e que a decisão seja responsável e boa tanto para a família quanto para o animal.</div></div>
+            <div class="faq-item"><button class="faq-pergunta" onclick="abrirFaq(this)">A localizacao mostrada no mapa e exata?<span>+</span></button><div class="faq-resposta">Não. O mapa utiliza uma localizacao aproximada para evitar a divulgacao publica do endereço onde o animal esta. Essa medida ajuda a proteger o animal, o responsável e a residencia. Depois do contato inicial, o endereço ou ponto de encontro pode ser combinado diretamente com o responsável, de preferência em uma situação segura e previamente organizada.</div></div>
+            <div class="faq-item"><button class="faq-pergunta" onclick="abrirFaq(this)">Posso publicar um animal para adoção?<span>+</span></button><div class="faq-resposta">Sim. Na secao "Publicar anuncio", você pode informar o nome, tipo, idade, características e localização aproximada do animal, além de adicionar uma foto pela camera ou pela galeria. Escreva uma personalidade verdadeira e util, incluindo informações como nível de energia, sociabilidade, comportamento com pessoas e preferência por ambientes. Quanto mais claras forem as informações, maiores sao as chances de encontrar uma família compativel.</div></div>
+            <div class="faq-item"><button class="faq-pergunta" onclick="abrirFaq(this)">Por que informar as características do animal?<span>+</span></button><div class="faq-resposta">As características ajudam a pessoa interessada a entender rapidamente o perfil do animal. Informações como nível de energia, sociabilidade, tranquilidade e independência facilitam a escolha de um companheiro compatível com a rotina da família.</div></div>
+            <div class="faq-item"><button class="faq-pergunta" onclick="abrirFaq(this)">O quiz garante qual animal devo adotar?<span>+</span></button><div class="faq-resposta">Não. O quiz funciona como uma ferramenta de orientação baseada nas respostas escolhidas. Ele compara preferências de rotina e estilo de convivência com as caracteristicas dos animais cadastrados e apresenta uma sugestao. Antes de adotar, também é importante considerar espaco disponível, tempo, custos, cuidados, convivência com outras pessoas ou animais e as necessidades específicas do animal.</div></div>
+            <div class="faq-item"><button class="faq-pergunta" onclick="abrirFaq(this)">O que significa adoção responsável?<span>+</span></button><div class="faq-resposta">Adoção responsável significa assumir o compromisso de cuidar do animal durante toda a vida, oferecendo alimentação adequada, água, abrigo, higiene, segurança, atenção e cuidados veterinarios quando necessários. Tambem envolve respeitar o tempo de adaptação do animal, manter identificação e vacinação conforme orientação profissional e nunca tratar a adoção como uma decisão impulsiva ou temporária.</div></div>
+            <div class="faq-item"><button class="faq-pergunta" onclick="abrirFaq(this)">O que devo observar antes de confirmar uma adoção?<span>+</span></button><div class="faq-resposta">Observe se sua rotina, espaco e disponibilidade sao compativeis com o animal. Converse com o responsável sobre comportamento, alimentação, histórico conhecido, convivência com crianças ou outros animais e necessidades de cuidado. Tambem é importante planejar os gastos e a adaptação inicial. Se houver dúvidas, esclareca tudo antes de confirmar a adoção.</div></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ==================================================
+     MODAL INTERESSE
+================================================== -->
+
+<div
+    class="modal"
+    id="modal">
+
+    <div class="modal-caixa">
+
+        <button
+            class="fechar-modal"
+            onclick="fecharModal()">
+
+            ×
+
+        </button>
+
+
+        <div id="formularioArea">
+
+            <h2>
+                Tenho interesse
+            </h2>
+
+            <p>
+
+                Você demonstrou interesse em
+                <strong id="animalEscolhido"></strong>.
+
+            </p>
+
+
+            <form
+                id="formInteresse"
+                onsubmit="enviarFormulario(event)">
+
+
+                <div class="campo">
+
+                    <label>
+                        Nome completo
+                    </label>
+
+                    <input
+                        type="text"
+                        required
+                        placeholder="Digite seu nome">
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        E-mail
+                    </label>
+
+                    <input
+                        type="email"
+                        required
+                        placeholder="Digite seu e-mail">
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        Telefone
+                    </label>
+
+                    <input
+                        type="tel"
+                        required
+                        placeholder="(00) 00000-0000">
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        Cidade e bairro
+                    </label>
+
+                    <input
+                        type="text"
+                        required
+                        placeholder="Digite sua cidade e bairro">
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    style="width:100%">
+
+                    Enviar interesse
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div
+            class="mensagem-sucesso"
+            id="mensagemSucesso">
+
+            <div class="icone">
+                ✓
+            </div>
+
+            <h3>
+                Interesse enviado!
+            </h3>
+
+            <p>
+
+                Obrigado por demonstrar interesse.
+                Em uma aplicação real, seus dados
+                seriam enviados ao responsável.
+
+            </p>
+
+            <button
+                class="btn btn-primary"
+                onclick="fecharModal()">
+
+                Fechar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     FOOTER
+================================================== -->
+
+<footer>
+
+    <div class="footer-grid">
+
+        <div>
+
+            <h3>
+                Amor de Quatro Patas
+            </h3>
+
+            <p>
+
+                Um espaço criado para aproximar animais
+                que precisam de uma família de pessoas
+                dispostas a oferecer amor, cuidado e
+                responsabilidade.
+
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <h3>
+                Navegação
+            </h3>
+
+            <ul class="footer-links">
+
+                <li>
+                    <a href="#sobre">
+                        Sobre nós
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#animais">
+                        Quero adotar
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#mapa">
+                        Localização
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#publicar">
+                        Publicar anúncio
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <div>
+
+            <h3>
+                Informações
+            </h3>
+
+            <ul class="footer-links">
+
+                <li>
+                    <a href="#como-funciona">
+                        Como funciona
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#quiz">
+                        Quiz
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#faq">
+                        Perguntas frequentes
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+
+    <div class="copyright">
+
+        © 2026 Amor de Quatro Patas.
+        Todos os direitos reservados.
+
+    </div>
+
+</footer>
+
+
+<!-- BOTÃO TOPO -->
+
+<button
+    class="voltar-topo"
+    id="voltarTopo"
+    onclick="window.scrollTo({
+        top:0,
+        behavior:'smooth'
+    })">
+
+    ↑
+
+</button>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+<script>
+
+    /* ==================================================
+       MENU
+    ================================================== */
+
+    const menuMobile =
+        document.getElementById("menuMobile");
+
+    const navLinks =
+        document.getElementById("navLinks");
+
+
+    menuMobile.onclick = function() {
+
+        navLinks.classList.toggle("aberto");
+
+    };
+
+
+    document
+        .querySelectorAll(".nav-links a")
+        .forEach(link => {
+
+            link.onclick = function() {
+
+                navLinks.classList.remove("aberto");
+
+            };
+
+        });
+
+
+    /* ==================================================
+       BUSCA E FILTRO
+    ================================================== */
+
+    let filtroAtual = "todos";
+
+
+    function buscarAnimal() {
+
+        const busca =
+            document
+                .getElementById("campoBusca")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const cards =
+            document.querySelectorAll(".animal-card");
+
+
+        let encontrados = 0;
+
+
+        cards.forEach(card => {
+
+            const nome =
+                card.dataset.nome.toLowerCase();
+
+            const tipo =
+                card.dataset.tipo;
+
+
+            const nomeCorresponde =
+                nome.includes(busca);
+
+
+            const tipoCorresponde =
+                filtroAtual === "todos" ||
+                tipo === filtroAtual;
+
+
+            if (
+                nomeCorresponde &&
+                tipoCorresponde
+            ) {
+
+                card.style.display = "grid";
+
+                encontrados++;
+
+            } else {
+
+                card.style.display = "none";
+
+            }
+
+        });
+
+
+        document
+            .getElementById("semResultado")
+            .style.display =
+            encontrados === 0
+                ? "block"
+                : "none";
+
+    }
+
+
+    function filtrar(tipo, botao) {
+
+        filtroAtual = tipo;
+
+
+        document
+            .querySelectorAll(".filtro")
+            .forEach(btn => {
+
+                btn.classList.remove("ativo");
+
+            });
+
+
+        botao.classList.add("ativo");
+
+
+        buscarAnimal();
+
+    }
+
+
+    /* ==================================================
+       MAPA
+    ================================================== */
+
+    const mapa =
+        L.map("map")
+            .setView(
+                [-27.4833, -50.1167],
+                13
+            );
+
+
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            attribution:
+                "&copy; OpenStreetMap contributors"
+        }
+    ).addTo(mapa);
+
+
+    function criarMarcador() {
+
+        return L.divIcon({
+
+            className: "",
+
+            html:
+                '<div class="marcador">' +
+                '<span>♥</span>' +
+                '</div>',
+
+            iconSize: [45,45],
+
+            iconAnchor: [22,44],
+
+            popupAnchor: [0,-40]
+
+        });
+
+    }
+
+
+    const animaisMapa = [
+
+        {
+            nome: "Luna",
+            tipo: "Cachorra",
+            idade: "2 anos",
+
+            lat: -27.4800,
+            lng: -50.1100,
+
+            imagem:
+                "https://www.patasdacasa.com.br/sites/default/files/styles/article_detail_1200/public/noticias/2023/01/feminino-de-cachorro-o-certo-e-cachorra-ou-cadela_1.jpg.webp?itok=Khmybjpx",
+            caracteristicas: ["Dócil", "Brincalhona", "Sociável"]
+        },
+
+
+        {
+            nome: "Tom",
+            tipo: "Cachorro",
+            idade: "4 anos",
+
+            lat: -27.4880,
+            lng: -50.1200,
+
+            imagem:
+                "https://cdn.jornaldaparaiba.com.br/wp-content/uploads/2024/01/racas-de-cachorro-labrador-retriever.jpg?xid=650493",
+            caracteristicas: ["Calmo", "Carinhoso", "Companheiro"]
+        },
+
+
+        {
+            nome: "Mel",
+            tipo: "Gata",
+            idade: "1 ano",
+
+            lat: -27.4750,
+            lng: -50.1250,
+
+            imagem:
+                "https://awebic.com.br/wp-content/uploads/2016/05/awebic-gata-mais-fotogenica-3.jpg",
+            caracteristicas: ["Curiosa", "Carinhosa", "Tranquila"]
+        },
+
+
+        {
+            nome: "Simba",
+            tipo: "Gato",
+            idade: "3 anos",
+
+            lat: -27.4900,
+            lng: -50.1050,
+
+            imagem:
+                "https://static.wixstatic.com/media/1cbe41_1db56ff59200428f99b87077f3b9f8dc~mv2_d_2304_1728_s_2.jpg/v1/fill/w_1000,h_750,al_c,q_85,usm_0.66_1.00_0.01/1cbe41_1db56ff59200428f99b87077f3b9f8dc~mv2_d_2304_1728_s_2.jpg",
+            caracteristicas: ["Independente", "Calmo", "Carinhoso"]
+        }
+
+    ];
+
+
+    const marcadores = {};
+
+
+    function adicionarMarcador(animal) {
+
+        const popup = `
+
+            <div class="popup">
+
+                <img
+                    src="${animal.imagem}"
+                    alt="${animal.nome}">
+
+                <h3>
+                    ${animal.nome}
+                </h3>
+
+                <p>
+                    ${animal.tipo} - ${animal.idade}<br>
+                    ${animal.local || "Otacílio Costa - SC"}
+                </p>
+
+            </div>
+
+        `;
+
+
+        const marcador =
+            L.marker(
+                [
+                    animal.lat,
+                    animal.lng
+                ],
+                {
+                    icon:
+                        criarMarcador()
+                }
+            )
+            .addTo(mapa)
+            .bindPopup(popup);
+
+
+        marcadores[animal.nome] =
+            marcador;
+
+    }
+
+
+    animaisMapa.forEach(
+        adicionarMarcador
+    );
+
+
+    function verLocalizacao(nome) {
+        const animal = animaisMapa.find(item => normalizarTexto(item.nome) === normalizarTexto(nome));
+        if (!animal) return;
+        document.getElementById("mapa").scrollIntoView({ behavior: "smooth" });
+        setTimeout(() => {
+            mapa.setView([animal.lat, animal.lng], 16, { animate: true });
+            if (marcadores[animal.nome]) marcadores[animal.nome].openPopup();
+        }, 600);
+    }
+
+
+    /* ==================================================
+       MODAL INTERESSE
+    ================================================== */
+
+    const modal =
+        document.getElementById("modal");
+
+
+    function abrirModal(nome) {
+
+        document
+            .getElementById("animalEscolhido")
+            .textContent = nome;
+
+
+        document
+            .getElementById("formularioArea")
+            .style.display = "block";
+
+
+        document
+            .getElementById("mensagemSucesso")
+            .style.display = "none";
+
+
+        document
+            .getElementById("formInteresse")
+            .reset();
+
+
+        modal.classList.add("aberto");
+
+
+        document.body.style.overflow =
+            "hidden";
+
+    }
+
+
+    function fecharModal() {
+
+        modal.classList.remove("aberto");
+
+        document.body.style.overflow =
+            "auto";
+
+    }
+
+
+    modal.onclick = function(event) {
+
+        if (event.target === modal) {
+
+            fecharModal();
+
+        }
+
+    };
+
+
+    function enviarFormulario(event) {
+
+        event.preventDefault();
+
+
+        document
+            .getElementById("formularioArea")
+            .style.display = "none";
+
+
+        document
+            .getElementById("mensagemSucesso")
+            .style.display = "block";
+
+    }
+
+
+    /* ==================================================
+       QUIZ - 5 PERGUNTAS, SEM PORCENTAGEM
+    ================================================== */
+    let perguntaAtual = 1;
+    const respostas = {};
+    const perguntas = document.querySelectorAll(".pergunta");
+    const totalPerguntas = perguntas.length;
+    const barraProgresso = document.getElementById("barraProgresso");
+    const quizContador = document.getElementById("quizContador");
+    const btnVoltar = document.getElementById("btnVoltar");
+    const btnProximo = document.getElementById("btnProximo");
+
+    document.querySelectorAll(".opcao").forEach(opcao => {
+        opcao.onclick = function() {
+            const pergunta = this.closest(".pergunta").dataset.pergunta;
+            respostas[pergunta] = this.dataset.resposta;
+            this.parentElement.querySelectorAll(".opcao").forEach(item => item.classList.remove("selecionada"));
+            this.classList.add("selecionada");
+        };
+    });
+
+    function atualizarQuiz() {
+        perguntas.forEach(pergunta => pergunta.classList.remove("ativa"));
+        const atual = document.querySelector(`[data-pergunta="${perguntaAtual}"]`);
+        if (atual) atual.classList.add("ativa");
+        const progresso = ((perguntaAtual - 1) / totalPerguntas) * 100;
+        barraProgresso.style.width = progresso + "%";
+        quizContador.textContent = `Pergunta ${perguntaAtual} de ${totalPerguntas}`;
+        btnVoltar.style.visibility = perguntaAtual === 1 ? "hidden" : "visible";
+        btnProximo.textContent = perguntaAtual === totalPerguntas ? "Ver resultado" : "Próxima";
+    }
+
+    function proximaPergunta() {
+        if (!respostas[perguntaAtual]) { alert("Escolha uma opção para continuar."); return; }
+        if (perguntaAtual < totalPerguntas) { perguntaAtual++; atualizarQuiz(); } else { mostrarResultado(); }
+    }
+
+    function voltarPergunta() {
+        if (perguntaAtual > 1) { perguntaAtual--; atualizarQuiz(); }
+    }
+
+    function normalizarTexto(texto) {
+        return (texto || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function perfilAnimal(animal) {
+        const texto = normalizarTexto((animal.caracteristicas || []).join(" "));
+        return {
+            tipo: normalizarTexto(animal.tipo),
+            ativo: /brinc|ativo|energi|passeio|sociavel/.test(texto),
+            calmo: /calmo|tranquil|sereno|docil/.test(texto),
+            carinhoso: /carinhos|afetuos|companheir/.test(texto),
+            curioso: /curios|explor/.test(texto),
+            independente: /independent|reservad|autonom/.test(texto),
+            sociavel: /sociavel|amigavel|companheir|carinhos/.test(texto)
+        };
+    }
+
+    function obterAnimaisQuiz() {
+        const animais = [...animaisMapa];
+        document.querySelectorAll(".animal-card").forEach(card => {
+            const nome = card.dataset.nome;
+            if (!animais.some(a => normalizarTexto(a.nome) === normalizarTexto(nome))) {
+                animais.push({
+                    nome: card.querySelector("h3")?.textContent.trim() || nome,
+                    tipo: card.dataset.tipo,
+                    idade: card.querySelector(".animal-idade")?.textContent.trim() || "",
+                    imagem: card.querySelector("img")?.src || "",
+                    caracteristicas: [...card.querySelectorAll(".caracteristica")].map(x => x.textContent.trim())
+                });
+            }
+        });
+        return animais;
+    }
+
+    function pontuarAnimal(animal) {
+        const perfil = perfilAnimal(animal);
+        const r = respostas;
+        let pontos = 0;
+        if (r[1] === "qualquer" || r[1] === "cao" && perfil.tipo === "cachorra" || r[1] === "cao" && perfil.tipo === "cachorro" || r[1] === "gato" && perfil.tipo === "gata" || r[1] === "gato" && perfil.tipo === "gato") pontos += 5;
+        if (r[2] === "ativo" && perfil.ativo) pontos += 4;
+        if (r[2] === "calmo" && perfil.calmo) pontos += 4;
+        if (r[2] === "equilibrado" && (perfil.ativo || perfil.calmo)) pontos += 2;
+        if (r[3] === "sociavel" && perfil.sociavel) pontos += 4;
+        if (r[3] === "carinhoso" && perfil.carinhoso) pontos += 4;
+        if (r[3] === "independente" && perfil.independente) pontos += 4;
+        if (r[4] === "muito" && (perfil.ativo || perfil.sociavel)) pontos += 3;
+        if (r[4] === "pouco" && (perfil.calmo || perfil.independente)) pontos += 3;
+        if (r[4] === "medio") pontos += 2;
+        if (r[5] === "brincalhao" && perfil.ativo) pontos += 5;
+        if (r[5] === "carinhoso" && perfil.carinhoso) pontos += 5;
+        if (r[5] === "curioso" && perfil.curioso) pontos += 5;
+        if (r[5] === "independente" && perfil.independente) pontos += 5;
+        return pontos;
+    }
+
+    function obterPersonalidade(animal) {
+        const texto = normalizarTexto((animal.caracteristicas || []).join(" "));
+        if (/brinc|energi|ativo/.test(texto)) return "É um animal brincalhão, cheio de energia e que adora interagir com sua família.";
+        if (/curios/.test(texto)) return "É curioso e gosta de explorar o ambiente, sempre interessado em descobrir algo novo.";
+        if (/independent|reservad/.test(texto)) return "Tem uma personalidade mais independente e tranquila, mas também gosta de receber carinho quando se sente à vontade.";
+        if (/carinhos|companheir/.test(texto)) return "É carinhoso e companheiro, gosta de estar perto das pessoas e receber atenção.";
+        if (/calmo|tranquil|docil/.test(texto)) return "Tem uma personalidade calma e tranquila, sendo uma ótima companhia para momentos de descanso.";
+        return "Tem uma personalidade especial e está esperando alguém que possa conhecê-lo melhor.";
+    }
+
+    function mostrarResultado() {
+        const animais = obterAnimaisQuiz();
+        if (!animais.length) return;
+        const ranking = animais.map(animal => ({ animal, pontos: pontuarAnimal(animal) })).sort((a,b) => b.pontos - a.pontos);
+        const vencedor = ranking[0].animal;
+        perguntas.forEach(pergunta => pergunta.style.display = "none");
+        document.querySelector(".barra").style.display = "none";
+        document.querySelector(".quiz-topo").style.display = "none";
+        document.getElementById("quizControles").style.display = "none";
+        document.getElementById("resultado").style.display = "block";
+        document.getElementById("resultadoImagem").src = vencedor.imagem || "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=700&q=85";
+        document.getElementById("resultadoTitulo").textContent = `${vencedor.nome} pode combinar com você!`;
+        document.getElementById("resultadoTexto").textContent = `${vencedor.nome} é ${normalizarTexto(vencedor.tipo).includes("gato") ? "um gato" : "um cachorro"} de ${vencedor.idade || "idade não informada"}. ${obterPersonalidade(vencedor)}`;
+        document.getElementById("resultadoBotao").onclick = () => document.getElementById("animais").scrollIntoView({ behavior: "smooth" });
+    }
+
+    atualizarQuiz();
+
+    /* ==================================================
+       PUBLICAR ANÚNCIO + LOCALIZAÇÃO AUTOMÁTICA
+    ================================================== */
+    function abrirCamera() { document.getElementById("cameraInput").click(); }
+    function abrirGaleria() { document.getElementById("galeriaInput").click(); }
+
+    function mostrarFoto(event) {
+        const arquivo = event.target.files[0];
+        if (!arquivo) return;
+        const leitor = new FileReader();
+        leitor.onload = function(e) {
+            const preview = document.getElementById("previewFoto");
+            preview.src = e.target.result;
+            preview.style.display = "block";
+            document.getElementById("fotoPlaceholder").style.display = "none";
+        };
+        leitor.readAsDataURL(arquivo);
+    }
+
+    async function obterCoordenadas(local) {
+        const consulta = `${local}, Santa Catarina, Brasil`;
+        const resposta = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(consulta)}`, {
+            headers: { "Accept-Language": "pt-BR" }
+        });
+        if (!resposta.ok) throw new Error("Falha ao localizar endereço");
+        const dados = await resposta.json();
+        if (!dados.length) throw new Error("Localização não encontrada");
+        return { lat: Number(dados[0].lat), lng: Number(dados[0].lon), nome: dados[0].display_name };
+    }
+
+    function adicionarAnimalAoMapa(animal) {
+        animaisMapa.push(animal);
+        adicionarMarcador(animal);
+    }
+
+    async function publicarAnimal(event) {
+        event.preventDefault();
+        const botao = event.target.querySelector('button[type="submit"]');
+        botao.disabled = true;
+        botao.textContent = "Localizando...";
+
+        try {
+            const nome = document.getElementById("nomePublicação").value.trim();
+            const tipo = document.getElementById("tipoPublicação").value;
+            const idade = document.getElementById("idadePublicação").value.trim();
+            const caracteristicasTexto = document.getElementById("caracteristicasPublicação").value.trim();
+            const local = document.getElementById("localPublicação").value.trim();
+            const caracteristicas = caracteristicasTexto.split(/[,;\n]+/).map(x => x.trim()).filter(Boolean).slice(0, 8);
+            const preview = document.getElementById("previewFoto");
+            const imagem = preview.style.display !== "none" && preview.src ? preview.src : "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=85";
+            const coordenadas = await obterCoordenadas(local);
+            const textoTipo = tipo === "cao" ? "Cachorro" : "Gato";
+
+            const animal = { nome, tipo, idade, lat: coordenadas.lat, lng: coordenadas.lng, imagem, caracteristicas, local: local };
+            adicionarAnimalAoMapa(animal);
+
+            const card = document.createElement("article");
+            card.className = "animal-card";
+            card.dataset.tipo = tipo;
+            card.dataset.nome = nome.toLowerCase();
+            card.innerHTML = `
+                <div class="animal-foto"><img src="${imagem}" alt="${nome}"></div>
+                <div class="animal-conteudo">
+                    <span class="animal-tipo">${textoTipo}</span>
+                    <h3>${nome}</h3>
+                    <div class="animal-idade">${idade}</div>
+                    <div class="animal-localizacao">Localização: ${local}</div>
+                    <div class="caracteristicas">
+                        ${caracteristicas.map(c => `<span class="caracteristica">${c}</span>`).join("")}
+                    </div>
+                    <div class="animal-botoes">
+                        <button class="animal-botao" onclick="abrirModal(${JSON.stringify(nome)})">Tenho interesse</button>
+                        <button class="localizacao-botao" onclick="verLocalizacao(${JSON.stringify(nome)})">Ver localização</button>
+                    </div>
+                </div>`;
+
+            document.getElementById("animaisGrid").appendChild(card);
+            document.getElementById("formPublicação").reset();
+            document.getElementById("previewFoto").style.display = "none";
+            document.getElementById("fotoPlaceholder").style.display = "flex";
+
+            alert(`Anúncio de ${nome} publicado e localizado no mapa com sucesso!`);
+            document.getElementById("animais").scrollIntoView({ behavior: "smooth" });
+            buscarAnimal();
+            setTimeout(() => verLocalizacao(nome), 500);
+        } catch (erro) {
+            alert("Não foi possível localizar o endereço informado. Digite uma cidade e bairro válidos e tente novamente.");
+        } finally {
+            botao.disabled = false;
+            botao.textContent = "Publicar anúncio";
+        }
+    }
+
+    /* ==================================================
+       FAQ
+    ================================================== */
+
+    function abrirFaq(botao) {
+
+        const item =
+            botao.parentElement;
+
+
+        const aberto =
+            item.classList.contains(
+                "aberto"
+            );
+
+
+        document
+            .querySelectorAll(".faq-item")
+            .forEach(faq => {
+
+                faq.classList.remove(
+                    "aberto"
+                );
+
+
+                faq.querySelector(
+                    ".faq-pergunta span"
+                ).textContent = "+";
+
+            });
+
+
+        if (!aberto) {
+
+            item.classList.add(
+                "aberto"
+            );
+
+
+            botao.querySelector(
+                "span"
+            ).textContent = "−";
+
+        }
+
+    }
+
+
+    /* ==================================================
+       BOTÃO TOPO
+    ================================================== */
+
+    const voltarTopo =
+        document.getElementById(
+            "voltarTopo"
+        );
+
+
+    window.addEventListener(
+        "scroll",
+        function() {
+
+            if (window.scrollY > 500) {
+
+                voltarTopo.classList.add(
+                    "visivel"
+                );
+
+            } else {
+
+                voltarTopo.classList.remove(
+                    "visivel"
+                );
+
+            }
+
+        }
+    );
+
+
+    /* ==================================================
+       ESC FECHA MODAL
+    ================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Escape") {
+
+                fecharModal();
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>
